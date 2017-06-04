@@ -9,6 +9,7 @@ var mongoose = require('mongoose');
 var session = require('express-session');
 var passport = require('passport');
 var flash = require('connect-flash');
+var validator = require('express-validator');
 
 var index = require('./routes/index');
 
@@ -26,10 +27,11 @@ app.set('view engine', '.hbs');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(validator()); //needs to happen after body is parsed
 app.use(cookieParser());
-app.use(session({secret: 'mysecret', resave: false, saveUninitialized: false}));
-app.use(flash());
-app.use(passport.initialize());
+app.use(session({secret: 'mysecret', resave: false, saveUninitialized: false})); //after cookieparser
+app.use(flash()); //order unimportant
+app.use(passport.initialize()); // needs to be after session, duh
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
