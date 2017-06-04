@@ -7,12 +7,15 @@ var bodyParser = require('body-parser');
 var expressHbs = require('express-handlebars');
 var mongoose = require('mongoose');
 var session = require('express-session');
+var passport = require('passport');
+var flash = require('connect-flash');
 
 var index = require('./routes/index');
 
 var app = express();
 
-mongoose.connect('localhost:27017/shopping');
+mongoose.connect('localhost:27017/shopping'); // creates db (with collection name shopping)
+require('./config/passport');                 // runs through passport.js to initialize
 
 app.engine('.hbs', expressHbs({partialsDir: __dirname + '/views/partials/', extname: '.hbs', defaultLayout: 'layout', layoutsDir: __dirname + '/views/layouts/'}));
 app.set('views', path.join(__dirname, 'views'));
@@ -25,6 +28,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(session({secret: 'mysecret', resave: false, saveUninitialized: false}));
+app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
